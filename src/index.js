@@ -8,6 +8,8 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  query,
+  where,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -29,6 +31,9 @@ const db = getFirestore();
 // collection ref
 const colRef = collection(db, "books");
 
+// queries
+const q = query(colRef, where("author", "!=", "Patrick rofus"));
+
 //  get collection data
 // getDocs(colRef)
 //   .then((snapshot) => {
@@ -44,6 +49,16 @@ const colRef = collection(db, "books");
 
 // real time data collection
 onSnapshot(colRef, (snapshot) => {
+  let books = [];
+  snapshot.docs.forEach((doc) => {
+    books.push({ ...doc.data(), id: doc.id });
+  });
+  console.log(books);
+});
+
+// real time query data collection
+onSnapshot(q, (snapshot) => {
+
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
