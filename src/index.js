@@ -10,6 +10,9 @@ import {
   doc,
   query,
   where,
+  orderBy,
+  serverTimestamp,
+  getDoc,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -32,7 +35,11 @@ const db = getFirestore();
 const colRef = collection(db, "books");
 
 // queries
-const q = query(colRef, where("author", "!=", "Patrick rofus"));
+const q = query(
+  colRef,
+
+  orderBy("createdAt", "desc")
+);
 
 //  get collection data
 // getDocs(colRef)
@@ -58,7 +65,6 @@ onSnapshot(colRef, (snapshot) => {
 
 // real time query data collection
 onSnapshot(q, (snapshot) => {
-
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
@@ -73,6 +79,7 @@ addBookForm.addEventListener("submit", (e) => {
   addDoc(colRef, {
     title: addBookForm.title.value,
     author: addBookForm.author.value,
+    createdAt: serverTimestamp(),
   }).then(() => {
     addBookForm.reset();
   });
@@ -88,3 +95,15 @@ deleteBookForm.addEventListener("submit", (e) => {
     deleteBookForm.reset();
   });
 });
+
+// get a single element
+const docRef = doc(db, "books", "45B69tdRj56lAt2Nz5rE");
+
+// getDoc(docRef).then((doc) => {     //
+//   console.log(doc.data(), doc.id);  //// single time time
+// });                                  //
+
+onSnapshot(docRef, (doc) => {
+  //
+  console.log(doc.data(), doc.id); //// real time
+}); //
